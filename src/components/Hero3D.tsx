@@ -1,31 +1,42 @@
 import React, { useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, MeshDistortMaterial, Text3D, Float } from '@react-three/drei';
+import { OrbitControls, Sphere, MeshDistortMaterial, Text3D, Float, Line, Points, PointMaterial } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { ArrowRight, Download, Zap, Brain, Globe } from 'lucide-react';
 import * as THREE from 'three';
 
 const AnimatedSphere = () => {
   const meshRef = useRef<THREE.Mesh>(null);
-  
+  // Custom shader material for a gradient effect
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+  const fragmentShader = `
+    varying vec2 vUv;
+    void main() {
+      vec3 color1 = vec3(0.95, 0.65, 0.95); // pastel purple
+      vec3 color2 = vec3(0.65, 0.85, 0.95); // pastel blue
+      vec3 color3 = vec3(0.85, 0.95, 0.80); // pastel green
+      float pct = smoothstep(0.0, 1.0, vUv.y);
+      vec3 color = mix(color1, color2, pct);
+      color = mix(color, color3, sin(vUv.x * 3.14) * 0.5 + 0.5);
+      gl_FragColor = vec4(color, 0.95);
+    }
+  `;
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.x = state.clock.elapsedTime * 0.2;
       meshRef.current.rotation.y = state.clock.elapsedTime * 0.3;
     }
   });
-
   return (
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
       <Sphere ref={meshRef} args={[1, 100, 200]} scale={2}>
-        <MeshDistortMaterial
-          color="#3B82F6"
-          attach="material"
-          distort={0.3}
-          speed={2}
-          roughness={0.4}
-          metalness={0.8}
-        />
+        <shaderMaterial attach="material" args={[{ vertexShader, fragmentShader }]} />
       </Sphere>
     </Float>
   );
@@ -58,234 +69,115 @@ const FloatingElements = () => {
   );
 };
 
+// Stylized Robotic Hand (simplified)
+const RoboticHand = () => {
+  // Palm
+  const palm = <mesh position={[0, -1.2, 0]}>
+    <boxGeometry args={[1.2, 0.4, 0.7]} />
+    <meshStandardMaterial color="#e5e7eb" metalness={0.7} roughness={0.3} />
+  </mesh>;
+  // Fingers (4)
+  const fingers = [
+    [-0.4, -0.7, 0.2],
+    [-0.15, -0.7, 0.35],
+    [0.15, -0.7, 0.35],
+    [0.4, -0.7, 0.2],
+  ].map((pos, i) => (
+    <mesh key={i} position={pos as [number, number, number]} rotation={[-0.3, 0, 0]}>
+      <cylinderGeometry args={[0.08, 0.09, 0.7, 16]} />
+      <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.2} />
+    </mesh>
+  ));
+  // Thumb
+  const thumb = <mesh position={[-0.6, -0.8, -0.1]} rotation={[-0.5, 0.5, 0]}>
+    <cylinderGeometry args={[0.09, 0.1, 0.5, 16]} />
+    <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.2} />
+  </mesh>;
+  return <group>{palm}{fingers}{thumb}</group>;
+};
+
+// AI Globe with nodes and lines
+const AIGlobe = () => {
+  // Node positions (randomized for demo, could be geo-based)
+  const nodes: [number, number, number][] = [
+    [0.7, 0.5, 0.9], [-0.8, 0.6, -0.7], [0.5, -0.7, 0.8], [-0.6, -0.5, -0.9],
+    [0.9, -0.2, -0.6], [-0.9, 0.1, 0.7], [0.2, 0.9, -0.5], [-0.3, -0.9, 0.4]
+  ];
+  // Lines between nodes
+  const lines: [ [number, number, number], [number, number, number] ][] = [
+    [nodes[0], nodes[1]], [nodes[2], nodes[3]], [nodes[4], nodes[5]], [nodes[6], nodes[7]],
+    [nodes[0], nodes[2]], [nodes[1], nodes[3]], [nodes[4], nodes[6]], [nodes[5], nodes[7]]
+  ];
+  return (
+    <group>
+      {/* Globe */}
+      <mesh position={nodes[0] as [number, number, number]}>
+        <sphereGeometry args={[1, 64, 64]} />
+        <meshPhysicalMaterial color="#1e293b" metalness={0.7} roughness={0.2} clearcoat={0.5} clearcoatRoughness={0.1} />
+      </mesh>
+      {/* Nodes */}
+      {nodes.map((pos, i) => (
+        <mesh key={i} position={pos as [number, number, number]}>
+          <sphereGeometry args={[0.07, 16, 16]} />
+          <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={0.7} />
+        </mesh>
+      ))}
+      {/* Lines */}
+      {lines.map((pts, i) => (
+        <Line key={i} points={pts as [ [number, number, number], [number, number, number] ]} color="#38bdf8" lineWidth={2} dashed={false} />
+      ))}
+    </group>
+  );
+};
+
+// Animated background text
+const AnimatedBackgroundText = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    animate={{ opacity: 0.15, y: 0 }}
+    transition={{ duration: 1.5 }}
+    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0"
+    style={{ fontSize: '8vw', fontWeight: 900, letterSpacing: '-0.05em', color: '#bdbdbd', whiteSpace: 'nowrap', userSelect: 'none' }}
+  >
+    NO-LIMITS
+  </motion.div>
+);
+
 const Hero3D = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    // Add particle animation background
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx || !containerRef.current) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.zIndex = '1';
-    canvas.style.pointerEvents = 'none';
-    
-    containerRef.current.appendChild(canvas);
-
-    const particles: Array<{x: number, y: number, vx: number, vy: number, size: number}> = [];
-    
-    for (let i = 0; i < 50; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 2 + 1
-      });
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
-      
-      particles.forEach(particle => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-        
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      
-      requestAnimationFrame(animate);
-    };
-    
-    animate();
-
-    return () => {
-      if (containerRef.current && canvas.parentNode) {
-        containerRef.current.removeChild(canvas);
-      }
-    };
+    // Remove any 3D or canvas background logic
   }, []);
-
   return (
-    <section ref={containerRef} className="relative min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 overflow-hidden">
-      {/* Animated background grid */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'grid-move 20s linear infinite'
-        }}></div>
+    <section ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#2563eb] via-[#38bdf8] to-[#60a5fa]">
+      {/* Optional animated gradient overlay for extra depth */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-[#2563eb]/30 via-[#38bdf8]/20 to-[#60a5fa]/10 opacity-80 animate-pulse z-0"></div>
+      {/* Video Background */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-60"
+        src="https://www.w3schools.com/howto/rain.mp4" // Placeholder, replace with your own
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      {/* Solid Overlay for readability */}
+      <div className="absolute inset-0 bg-[#1e293b] bg-opacity-70 z-10"></div>
+      {/* Text Content */}
+      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full px-4 py-32 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-[#ffffff] drop-shadow-lg">
+          Future-Proofing Businesses Through Digital Innovation
+        </h1>
+        <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-[#dbeafe] drop-shadow">
+          Welcome to Catallyst Digital Futures Lab — a global knowledge hub advancing enterprise transformation through AI, data, and digital culture.
+        </p>
+        <a
+          href="#"
+          className="inline-block bg-[#38bdf8] hover:bg-[#2563eb] text-[#1e293b] hover:text-[#dbeafe] px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg"
+        >
+          Download the Digital Readiness Index 2025
+        </a>
       </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-screen">
-          {/* Left Content */}
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1 }}
-            className="text-white space-y-8"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.8 }}
-              className="flex items-center space-x-4 mb-6"
-            >
-              <div className="flex space-x-2">
-                <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-3 h-3 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-              </div>
-              <span className="text-blue-300 font-medium tracking-wider">DIGITAL FUTURES LAB</span>
-            </motion.div>
-
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-5xl md:text-7xl font-bold leading-tight"
-            >
-              Future-Proofing
-              <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-teal-400 bg-clip-text text-transparent">
-                Digital Innovation
-              </span>
-            </motion.h1>
-
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-2xl"
-            >
-              Welcome to Catallyst Digital Futures Lab — a global knowledge hub advancing 
-              enterprise transformation through <span className="text-blue-400 font-semibold">AI</span>, 
-              <span className="text-purple-400 font-semibold"> Metaverse</span>, and 
-              <span className="text-teal-400 font-semibold"> Future Tech</span>.
-            </motion.p>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="flex flex-wrap gap-6"
-            >
-              <div className="flex items-center space-x-2 text-blue-300">
-                <Brain className="w-5 h-5" />
-                <span>AI-Powered</span>
-              </div>
-              <div className="flex items-center space-x-2 text-purple-300">
-                <Globe className="w-5 h-5" />
-                <span>Metaverse Ready</span>
-              </div>
-              <div className="flex items-center space-x-2 text-teal-300">
-                <Zap className="w-5 h-5" />
-                <span>Future Tech</span>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4 pt-8"
-            >
-              <button className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-blue-500/25 flex items-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                <Download className="mr-2 h-5 w-5 relative z-10" />
-                <span className="relative z-10">Download Digital Readiness Index 2025</span>
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300 relative z-10" />
-              </button>
-            </motion.div>
-          </motion.div>
-
-          {/* Right 3D Canvas */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="relative h-[600px] lg:h-[700px]"
-          >
-            <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-              <ambientLight intensity={0.5} />
-              <pointLight position={[10, 10, 10]} intensity={1} />
-              <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8B5CF6" />
-              <pointLight position={[10, -10, 10]} intensity={0.5} color="#14B8A6" />
-              
-              <AnimatedSphere />
-              <FloatingElements />
-              
-              <OrbitControls 
-                enableZoom={false} 
-                enablePan={false}
-                autoRotate
-                autoRotateSpeed={0.5}
-              />
-            </Canvas>
-            
-            {/* Floating UI Elements */}
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.2, duration: 0.8 }}
-              className="absolute top-20 right-10 bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20"
-            >
-              <div className="text-white text-sm">
-                <div className="text-blue-300 font-semibold">AI Processing</div>
-                <div className="text-2xl font-bold">98.7%</div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.4, duration: 0.8 }}
-              className="absolute bottom-32 left-10 bg-white/10 backdrop-blur-lg rounded-2xl p-4 border border-white/20"
-            >
-              <div className="text-white text-sm">
-                <div className="text-purple-300 font-semibold">Digital Readiness</div>
-                <div className="text-2xl font-bold">120+ Firms</div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
-      >
-        <div className="flex flex-col items-center space-y-2">
-          <span className="text-sm text-gray-300">Scroll to explore</span>
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
-          </div>
-        </div>
-      </motion.div>
-
-      <style jsx>{`
-        @keyframes grid-move {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(50px, 50px); }
-        }
-      `}</style>
     </section>
   );
 };

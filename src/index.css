@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 1s ease-out forwards;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.group:hover .group-hover\\:rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.mission-card-0:hover .logo-container,
+.mission-card-1:hover .logo-container,
+.mission-card-2:hover .logo-container {
+  transform: rotateY(180deg);
+}
+
+.mission-card-0:hover .logo-icon,
+.mission-card-1:hover .logo-icon,
+.mission-card-2:hover .logo-icon {
+  transform: rotateY(180deg);
+}
+
+.clip-path-hexagon {
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Faculty = () => {
   const faculty = [
@@ -24,13 +25,13 @@ const Faculty = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
+    <section className="py-20 bg-[#f1f5f9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-green-200 bg-clip-text text-transparent mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#2563eb] mb-6">
             Faculty & Advisors
           </h2>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-[#1e293b] max-w-3xl mx-auto">
             Our global network of academic partners and industry experts brings 
             world-class expertise to drive meaningful research and innovation.
           </p>
@@ -38,25 +39,45 @@ const Faculty = () => {
         
         <div className="grid md:grid-cols-3 gap-8">
           {faculty.map((member, index) => (
-            <div key={index} className="group bg-gray-800/30 backdrop-blur-lg rounded-xl p-8 border border-gray-700/30 hover:border-green-500/30 hover:bg-gray-800/50 hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 text-center">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              whileHover={{ scale: 1.04, boxShadow: '0 8px 32px #2563eb22' }}
+              className="group rounded-xl p-8 border-2 border-transparent hover:border-[#38bdf8] transition-all duration-300 text-center relative overflow-hidden"
+              style={{ 
+                background: `linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%)`,
+                boxShadow: '0 4px 20px rgba(37, 99, 235, 0.1)'
+              }}
+            >
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2563eb] via-[#38bdf8] to-[#0ea5e9] opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
+              
               <div className="relative mb-6">
-                <img 
-                  src={member.image} 
-                  alt={member.name}
-                  className="w-32 h-32 rounded-full mx-auto object-cover shadow-lg group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 w-32 h-32 rounded-full mx-auto bg-gradient-to-t from-green-600 to-transparent opacity-30"></div>
+                <div className="relative">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-32 h-32 rounded-full mx-auto object-cover shadow-lg group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {/* Gradient ring around image */}
+                  <div className="absolute inset-0 w-32 h-32 rounded-full mx-auto bg-gradient-to-r from-[#2563eb] to-[#38bdf8] opacity-20 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-green-300 transition-colors duration-300">
-                {member.name}
-              </h3>
-              <p className="text-green-400 font-medium mb-2">
-                {member.title}
-              </p>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                {member.institution}
-              </p>
-            </div>
+              
+              <div className="relative z-10">
+                <h3 className="text-xl font-semibold text-[#2563eb] mb-2 group-hover:text-[#1e293b] transition-colors duration-300">
+                  {member.name}
+                </h3>
+                <p className="text-[#38bdf8] font-medium mb-2 bg-gradient-to-r from-[#2563eb] to-[#38bdf8] bg-clip-text text-transparent">
+                  {member.title}
+                </p>
+                <p className="text-[#1e293b] group-hover:text-[#2563eb] transition-colors duration-300">
+                  {member.institution}
+                </p>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

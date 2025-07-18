@@ -15,13 +15,10 @@ import Footer from './components/Footer';
 
 function App() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#EAEADA]">
       <Header />
       <Hero3D />
-      <TechShowcase />
-      {/* <MetaverseLab /> */}
-      
-      {/* <Mission /> */}
+      <Mission />
       <FocusAreas />
       <FlagshipResearch />
       <FutureTechGrid />
