@@ -13,25 +13,21 @@ const FutureTechGrid = () => {
       icon: Users,
       title: 'CXO Roundtables',
       description: 'Invite-only forums for executive dialogue on high-stakes digital shifts.',
-      // color: 'bg-blue-600'
     },
     {
       icon: Zap,
       title: 'Rapid Prototype Sprints',
       description: 'Four-week co-creation labs with client teams to test innovation hypotheses.',
-      // color: 'bg-blue-600'
     },
     {
       icon: BookOpen,
       title: 'Executive Briefings',
       description: 'Tailored learning journeys delivered in-house to inspire and align leadership.',
-      // color: 'bg-blue-600'
     },
     {
       icon: Search,
       title: 'Research Projects',
       description: 'Deep-dives into digital strategy, data value creation, and transformation case studies.',
-      // color: 'bg-blue-600'
     }
   ];
 
@@ -55,19 +51,17 @@ const FutureTechGrid = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
               whileHover={{ scale: 1.05, rotate: 5 }}
-              className="group bg-white rounded-3xl p-8 clip-path-hexagon hover:shadow-2xl transition-all duration-300 min-h-[300px] flex items-center justify-center"
+              className="group bg-white rounded-3xl p-8 hover:shadow-2xl transition-all duration-300 min-h-[300px] flex flex-col items-center justify-between"
             >
-              <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#2563eb] to-[#38bdf8] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <tech.icon className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-[#2563eb] mb-4 group-hover:text-[#1e293b] transition-colors duration-300">
-                  {tech.title}
-                </h3>
-                <p className="text-base text-[#1e293b] group-hover:text-[#38bdf8] transition-colors duration-300 leading-relaxed">
-                  {tech.description}
-                </p>
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#2563eb] to-[#38bdf8] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <tech.icon className="w-10 h-10 text-white" />
               </div>
+              <h3 className="text-xl font-bold text-[#2563eb] mb-4 group-hover:text-[#1e293b] transition-colors duration-300 text-center">
+                {tech.title}
+              </h3>
+              <p className="text-base text-[#1e293b] group-hover:text-[#38bdf8] transition-colors duration-300 leading-relaxed text-center">
+                {tech.description}
+              </p>
             </motion.div>
           ))}
         </div>

@@ -155,17 +155,17 @@ const Hero3D = () => {
       {/* Video Background */}
       <video
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-60"
-        src="src\components\203986-923133871_small.mp4" // Placeholder, replace with your own
+        src="src\components\assets\203986-923133871_small.mp4" // Placeholder, replace with your own
         autoPlay
         loop
         muted
         playsInline
       />
       {/* Solid Overlay for readability */}
-      <div className="absolute inset-0 bg-[#1e293b] bg-opacity-70 z-10"></div>
+      <div className="absolute inset-0 bg-[#1e293b] bg-opacity-70 z-10 "></div>
       {/* Text Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full px-4 py-32 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-[#ffffff] drop-shadow-lg">
+      <div className="relative z-20 flex flex-col items-center justify-center w-full h-full px-4 py-32 mt-32 text-center ">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-[#ffffff] drop-shadow-lg ">
           Future-Proofing Businesses Through Digital Innovation
         </h1>
         <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-[#dbeafe] drop-shadow">

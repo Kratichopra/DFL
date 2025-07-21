@@ -14,9 +14,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
-            <h3 className="text-2xl font-bold text-[#2563eb] mb-4">
-              Digital Futures Lab
-            </h3>
+            <img src="src/components/assets/LOGO-WT.png" alt="Digital Futures Lab Logo" className="w-40 h-auto mb-4" />
             <p className="text-[#f1f5f9] mb-6 leading-relaxed">
               A global knowledge hub advancing enterprise transformation through AI, 
               data, and digital culture. Co-creating actionable insights that translate 

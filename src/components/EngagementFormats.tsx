@@ -27,61 +27,28 @@ const formats = [
 ];
 
 const EngagementFormats = () => {
-  const [selected, setSelected] = useState(0);
-
   return (
     <section className="py-20 bg-[#f1f5f9]">
-      <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center md:items-start gap-10">
-        {/* Points List */}
-        <div className="flex md:flex-col flex-row gap-4 md:w-1/2 w-full justify-center">
+      <div className="max-w-5xl mx-auto px-4">
+        <h2 className="text-3xl md:text-5xl font-bold text-[#2563eb] mb-10 text-center">Engagement Formats</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {formats.map((format, idx) => (
-            <motion.button
+            <motion.div
               key={idx}
-              onClick={() => setSelected(idx)}
-              className={`px-6 py-4 rounded-xl font-semibold text-lg border transition-all duration-300
-                ${selected === idx
-                  ? 'bg-[#38bdf8] text-[#2563eb] border-[#2563eb] shadow-lg scale-105'
-                  : 'bg-[#ffffff] text-[#1e293b] border-[#64748b] hover:bg-[#2563eb] hover:text-white hover:border-[#38bdf8]'}
-              `}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {format.title}
-            </motion.button>
-          ))}
-        </div>
-        {/* Image and Description */}
-        <div className="flex flex-col items-center md:w-1/2 w-full">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={formats[selected].image}
-              src={formats[selected].image}
-              alt={formats[selected].title}
-              className="w-full max-w-md rounded-xl shadow-2xl mb-6"
+              className="bg-white rounded-2xl shadow-xl flex flex-col items-center p-6 transition-transform hover:scale-105"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -40 }}
-              transition={{ duration: 0.5 }}
-            />
-          </AnimatePresence>
-          <motion.h3
-            key={formats[selected].title}
-            className="text-2xl font-bold text-[#2563eb] mb-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            {formats[selected].title}
-          </motion.h3>
-          <motion.p
-            key={formats[selected].description}
-            className="text-[#1e293b] text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {formats[selected].description}
-          </motion.p>
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+            >
+              <img
+                src={format.image}
+                alt={format.title}
+                className="w-24 h-24 object-contain mb-4 rounded-full bg-[#f1f5f9] border border-[#38bdf8] shadow"
+              />
+              <h3 className="text-xl font-bold text-[#2563eb] mb-2 text-center">{format.title}</h3>
+              <p className="text-[#1e293b] text-center text-sm">{format.description}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

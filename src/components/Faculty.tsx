@@ -14,13 +14,13 @@ const Faculty = () => {
       name: 'Dr. Rajnish Dass',
       title: 'Digital Business Innovation',
       institution: 'CEEI',
-      image: 'src/components/Rajinish.jpg'
+      image: 'src/components/assets/Rajinish.jpg'
     },
     {
       name: 'Prof. Michael Chu',
       title: 'Platform Thinking',
       institution: 'Harvard',
-      image: 'src/components/michael_chu_01.jpg'
+      image: 'src/components/assets/michael_chu_01.jpg'
     }
   ];
 
